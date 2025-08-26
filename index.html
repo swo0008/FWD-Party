@@ -91,16 +91,16 @@
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // You will need to replace this with your actual Firebase Project ID
-        const customFirebaseConfig = {
-            apiKey: firebaseConfig.apiKey || "", // Use provided API key or empty string
-            authDomain: firebaseConfig.authDomain || "",
-            projectId: "forward-rcv", // <-- This is your Firebase Project ID
-            storageBucket: firebaseConfig.storageBucket || "",
-            messagingSenderId: firebaseConfig.messagingSenderId || "",
-            appId: firebaseConfig.appId || ""
+        // Your web app's Firebase configuration
+        const realFirebaseConfig = {
+          apiKey: "AIzaSyBsf4UeuFadrDteuv4z88-HoWTdKQHl9iE",
+          authDomain: "forward-rcv.firebaseapp.com",
+          projectId: "forward-rcv",
+          storageBucket: "forward-rcv.firebasestorage.app",
+          messagingSenderId: "342599882784",
+          appId: "1:342599882784:web:5dd525651a6a61efd28445"
         };
-
+        
         let db, auth;
         let userId;
         let currentElectionId = null;
@@ -109,7 +109,7 @@
         async function initializeFirebase() {
             try {
                 // Initialize the app with your custom project ID
-                const app = initializeApp(customFirebaseConfig);
+                const app = initializeApp(realFirebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 

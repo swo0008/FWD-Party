@@ -80,11 +80,6 @@
         import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, query, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global variables provided by the Canvas environment
-        const appId = '1:342599882784:web:5dd525651a6a61efd28445';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
         // Your web app's Firebase configuration
         const realFirebaseConfig = {
           apiKey: "AIzaSyBsf4UeuFadrDteuv4z88-HoWTdKQHl9iE",
@@ -102,17 +97,12 @@
         // --- Firebase Initialization and Authentication ---
         async function initializeFirebase() {
             try {
-                // Initialize the app with your custom project ID
                 const app = initializeApp(realFirebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app, 'forwardrcv');
 
                 // Sign in with the provided custom token or anonymously
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                await signInAnonymously(auth);
 
                 userId = auth.currentUser.uid;
                 document.getElementById('user-id-display').textContent = `Your User ID: ${userId}`;
@@ -219,9 +209,8 @@
             showLoading(true);
 
             try {
-                // Use the user's ID to generate a unique election ID
                 const electionId = `${userId}-${Date.now()}`;
-                const electionRef = doc(db, 'artifacts', appId, 'public', 'data', 'elections', electionId);
+                const electionRef = doc(db, 'elections', electionId);
 
                 await setDoc(electionRef, {
                     question: question,
@@ -241,7 +230,7 @@
 
         async function joinElection(electionId) {
             showLoading(true);
-            const electionRef = doc(db, 'artifacts', appId, 'public', 'data', 'elections', electionId);
+            const electionRef = doc(db, 'elections', electionId);
             try {
                 const electionSnap = await getDoc(electionRef);
                 if (!electionSnap.exists()) {
@@ -290,7 +279,7 @@
             const rankedChoices = Array.from(candidateListDrag.children).map(li => li.textContent.replace(/^\d+\.\s*/, '').trim());
 
             try {
-                const ballotsRef = collection(db, 'artifacts', appId, 'public', 'data', 'elections', currentElectionId, 'ballots');
+                const ballotsRef = collection(db, 'elections', currentElectionId, 'ballots');
                 await addDoc(ballotsRef, {
                     choices: rankedChoices,
                     voterId: userId,
@@ -310,7 +299,7 @@
         
         // --- Real-time Results Listener ---
         function listenForBallots(electionId, candidates) {
-            const ballotsRef = collection(db, 'artifacts', appId, 'public', 'data', 'elections', electionId, 'ballots');
+            const ballotsRef = collection(db, 'elections', electionId, 'ballots');
             
             onSnapshot(ballotsRef, (snapshot) => {
                 const allBallots = [];
